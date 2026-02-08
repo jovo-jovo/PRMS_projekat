@@ -18,6 +18,7 @@ namespace Server
             var letelice = new List<Letelica>();
             var zadaci = new List<Zadatak>();
             var letelicaEndpoints = new Dictionary<Guid, IPEndPoint>();
+            var alarmi = new List<Alarm>();
 
             Console.WriteLine("Server pokrenut na portu 9000");
 
@@ -46,13 +47,13 @@ namespace Server
 
             while (true)
             {
-                // Prima poruke ako ih ima
+                // prima poruke ako ih ima
                 if (udpServer.Available > 0)
                 {
                     var rezultat = await udpServer.ReceiveAsync();
                     string json = Encoding.UTF8.GetString(rezultat.Buffer);
 
-                    // Pokusaj: Letelica
+                    // pokusaj: letelica
                     Letelica? letelicaPrimljena = null;
                     try { letelicaPrimljena = JsonSerializer.Deserialize<Letelica>(json); } catch { }
 
@@ -72,7 +73,7 @@ namespace Server
                             postojeca.Status = letelicaPrimljena.Status;
                         }
 
-                        // Endpoint za slanje zadataka nazad
+                        // endpoint za slanje zadataka nazad
                         letelicaEndpoints[letelicaPrimljena.Id] = rezultat.RemoteEndPoint;
 
                         // ACK
@@ -83,7 +84,7 @@ namespace Server
                     }
                     else
                     {
-                        // Pokusaj: Zadatak (zavrsen)
+                        // pokusaj: zadatak je zavrsen
                         Zadatak? zavrseniZadatak = null;
                         try { zavrseniZadatak = JsonSerializer.Deserialize<Zadatak>(json); } catch { }
 
@@ -98,22 +99,52 @@ namespace Server
                             {
                                 zad.Status = StatusZadatka.Zavrsen;
 
-                                // Oslobodi letelicu
+                                // oslobodi letelicu
                                 var let = letelice.Find(l => l.Id == zad.LetelicaId);
                                 if (let != null)
                                     let.Status = StatusLetelice.Slobodna;
 
-                                // Azuriraj polje
+                                // azurira polje
                                 teren[zad.X, zad.Y].Tip = TipPolja.Obradjeno;
                                 teren[zad.X, zad.Y].Status = StatusPolja.Slobodno;
 
                                 Console.WriteLine($"Zadatak završen ({zad.Tip}) na ({zad.X},{zad.Y}) | Letelica: {zad.LetelicaId}");
                             }
                         }
+                        else
+                        {
+                            Alarm? alarm = null;
+                            try { alarm = JsonSerializer.Deserialize<Alarm>(json); } catch { }
+
+                            if (alarm != null && alarm.LetelicaId != Guid.Empty)
+                            {
+                                alarmi.Add(alarm);
+
+                                Console.WriteLine($"ALARM: {alarm.Tip} | Letelica: {alarm.LetelicaId} | Prioritet: {alarm.Prioritet}");
+
+                                // letelica u kvaru
+                                var let = letelice.Find(l => l.Id == alarm.LetelicaId);
+                                if (let != null)
+                                    let.Status = StatusLetelice.UKvaru;
+
+                                // redistribucija zadataka letelice
+                                foreach (var z in zadaci)
+                                {
+                                    if (z.LetelicaId == alarm.LetelicaId && z.Status == StatusZadatka.UToku)
+                                    {
+                                        z.LetelicaId = Guid.Empty;
+                                        z.Status = StatusZadatka.UToku;
+                                        teren[z.X, z.Y].Status = StatusPolja.Slobodno;
+
+                                        Console.WriteLine($"REDISTRIBUCIJA: zadatak ({z.Tip}) za ({z.X},{z.Y}) vraćen.");
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
 
-                // Generisanje alarma (10% sanse po ciklusu za neobradjena polja)
+                // generisanje alarma (10% sanse po ciklusu za neobradjena polja)
                 foreach (var polje in teren)
                 {
                     if (polje.Tip == TipPolja.Neobradjeno && rnd.Next(0, 10) == 0)
@@ -123,10 +154,10 @@ namespace Server
                     }
                 }
 
-                // Dodela i slanje zadataka slobodnim izvrsnim letelicama
+                // dodela i slanje zadataka slobodnim izvrsnim letelicama
                 foreach (var polje in teren)
                 {
-                    // samo slobodna polja koja su Alarm ili Neobradjena
+                    // samo slobodna polja koja su alarm ili neobradjena
                     if ((polje.Tip == TipPolja.Alarm || polje.Tip == TipPolja.Neobradjeno) && polje.Status == StatusPolja.Slobodno)
                     {
                         var slobodnaLetelica = letelice.Find(l => l.Status == StatusLetelice.Slobodna && l.Tip == TipLetelice.Izvrsna);
@@ -152,10 +183,10 @@ namespace Server
                         zadaci.Add(zadatak);
                         slobodnaLetelica.Status = StatusLetelice.Zauzeta;
 
-                        // Obiljezi polje zauzetim dok se radi
+                        // biljezi polje zauzetim dok se radi
                         polje.Status = StatusPolja.Zauzeto;
 
-                        // Posalji zadatak letelici
+                        // salje zadatak letelici
                         string zadJson = JsonSerializer.Serialize(zadatak);
                         byte[] zadData = Encoding.UTF8.GetBytes(zadJson);
                         await udpServer.SendAsync(zadData, zadData.Length, ep);

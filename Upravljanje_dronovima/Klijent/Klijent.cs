@@ -78,20 +78,18 @@ namespace Klijent
 
                         Console.WriteLine($"ALARM poslat serveru: {alarm.Tip} | Letelica: {l.Id}");
 
-                        // pošalji i update letelice (status = UKvaru)
+                        // posalji i update letelice (status je u kvaru)
                         string letJson2 = JsonSerializer.Serialize(l);
                         byte[] letData2 = Encoding.UTF8.GetBytes(letJson2);
                         await udpClient.SendAsync(letData2, letData2.Length, serverEndpoint);
 
-                        continue; // NE zavrsava zadatak
+                        continue;
                     }
 
-                    // ako nema alarma — nastavlja normalno izvrsenje
+                    // ako nema alarma nastavlja normalno izvrsavanje
                     await Task.Delay(2000);
 
                     zadatak.Status = StatusZadatka.Zavrsen;
-
-
 
                     zadatak.LetelicaId = l.Id;
 
