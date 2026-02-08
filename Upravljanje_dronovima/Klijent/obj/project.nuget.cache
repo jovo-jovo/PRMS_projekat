@@ -1,13 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "dgoASr9/iYQ=",
+  "dgSpecHash": "4Z+eqh2tVOA=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Jovan\\Documents\\PRMS_Projekat\\Upravljanje_dronovima\\Klijent\\Klijent.csproj",
-  "expectedPackageFiles": [
-    "C:\\Users\\Jovan\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\9.0.12\\microsoft.windowsdesktop.app.ref.9.0.12.nupkg.sha512",
-    "C:\\Users\\Jovan\\.nuget\\packages\\microsoft.netcore.app.ref\\9.0.12\\microsoft.netcore.app.ref.9.0.12.nupkg.sha512",
-    "C:\\Users\\Jovan\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\9.0.12\\microsoft.aspnetcore.app.ref.9.0.12.nupkg.sha512",
-    "C:\\Users\\Jovan\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\9.0.12\\microsoft.netcore.app.host.win-x64.9.0.12.nupkg.sha512"
-  ],
+  "projectFilePath": "C:\\Users\\Lenovo\\Documents\\GitHub\\PRMS\\PRMS_projekat\\Upravljanje_dronovima\\Klijent\\Klijent.csproj",
+  "expectedPackageFiles": [],
   "logs": []
 }
