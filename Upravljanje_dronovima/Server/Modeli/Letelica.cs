@@ -12,6 +12,6 @@ namespace Server.Modeli
         public TipLetelice Tip { get; set; }
         public int X { get; set; }
         public int Y { get; set; }
-        public StatusLetelice Status { get; set; } //model servera
+        public StatusLetelice Status { get; set; }
     }
 }

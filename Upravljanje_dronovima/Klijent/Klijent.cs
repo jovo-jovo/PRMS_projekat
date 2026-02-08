@@ -7,7 +7,7 @@ using Upravljanje_Dronovima.Models;
 
 namespace Klijent
 {
-    class Program
+    class Klijent
     {
         static async Task Main()
         {

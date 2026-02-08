@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Upravljanje_Dronovima.Models
+namespace Klijent.Modeli
 {
     public enum TipLetelice { Nadzorna, Izvrsna }
     public enum StatusLetelice { Slobodna, Zauzeta, UKvaru }
