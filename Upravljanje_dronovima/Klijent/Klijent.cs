@@ -29,7 +29,7 @@ namespace Klijent
             byte[] data = Encoding.UTF8.GetBytes(json);
             await udpClient.SendAsync(data, data.Length, serverEndpoint);
 
-            // Čekamo potvrdu (ACK)
+            // Ceka potvrdu (ACK)
             var response = await udpClient.ReceiveAsync();
             Console.WriteLine("Server: " + Encoding.UTF8.GetString(response.Buffer));
 
@@ -42,7 +42,7 @@ namespace Klijent
                     var msg = await udpClient.ReceiveAsync();
                     string text = Encoding.UTF8.GetString(msg.Buffer);
 
-                    // Ignoriši ACK poruke
+                    // Ignorisi ACK poruke
                     if (text == "ACK")
                         continue;
 
@@ -54,7 +54,7 @@ namespace Klijent
 
                     Console.WriteLine($"Primljen zadatak: {zadatak.Tip} na polju ({zadatak.X},{zadatak.Y})");
 
-                    // Simulacija izvršenja
+                    // Simulacija izvrsenja
                     l.Status = StatusLetelice.Zauzeta;
                     await Task.Delay(2000);
 
@@ -65,12 +65,12 @@ namespace Klijent
                     l.Y = zadatak.Y;
                     l.Status = StatusLetelice.Slobodna;
 
-                    // Pošalji završeni zadatak serveru
+                    // Salje zavrsen zadatak serveru
                     string jsonZadatak = JsonSerializer.Serialize(zadatak);
                     byte[] bytes = Encoding.UTF8.GetBytes(jsonZadatak);
                     await udpClient.SendAsync(bytes, bytes.Length, serverEndpoint);
 
-                    // Pošalji update letelice (status + pozicija)
+                    // Salje update letelice (status i poziciju)
                     string letJson = JsonSerializer.Serialize(l);
                     byte[] letData = Encoding.UTF8.GetBytes(letJson);
                     await udpClient.SendAsync(letData, letData.Length, serverEndpoint);

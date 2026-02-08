@@ -46,7 +46,7 @@ namespace Server
 
             while (true)
             {
-                // Primamo poruke ako ih ima (ne blokiramo server)
+                // Prima poruke ako ih ima
                 if (udpServer.Available > 0)
                 {
                     var rezultat = await udpServer.ReceiveAsync();
@@ -113,7 +113,7 @@ namespace Server
                     }
                 }
 
-                // Generisanje alarma (10% aanse po ciklusu za neobradjena polja)
+                // Generisanje alarma (10% sanse po ciklusu za neobradjena polja)
                 foreach (var polje in teren)
                 {
                     if (polje.Tip == TipPolja.Neobradjeno && rnd.Next(0, 10) == 0)
