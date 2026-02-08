@@ -12,5 +12,7 @@ namespace Modeli
             public int X { get; set; }
             public int Y { get; set; }
             public int Prioritet { get; set; }
-        }
+        public Guid LetelicaId { get; set; }    // ko je poslao
+        public DateTime Vreme { get; set; } = DateTime.Now;
+    }
 }

@@ -56,9 +56,43 @@ namespace Klijent
 
                     // Simulacija izvrsenja
                     l.Status = StatusLetelice.Zauzeta;
+
+                    // simulacija kvara (5%)
+                    Random rnd = new Random();
+                    if (rnd.Next(0, 20) == 0)
+                    {
+                        l.Status = StatusLetelice.UKvaru;
+
+                        Alarm alarm = new Alarm
+                        {
+                            Tip = TipAlarma.Kvar,
+                            X = l.X,
+                            Y = l.Y,
+                            Prioritet = 5,
+                            LetelicaId = l.Id
+                        };
+
+                        string alarmJson = JsonSerializer.Serialize(alarm);
+                        byte[] alarmData = Encoding.UTF8.GetBytes(alarmJson);
+                        await udpClient.SendAsync(alarmData, alarmData.Length, serverEndpoint);
+
+                        Console.WriteLine($"ALARM poslat serveru: {alarm.Tip} | Letelica: {l.Id}");
+
+                        // pošalji i update letelice (status = UKvaru)
+                        string letJson2 = JsonSerializer.Serialize(l);
+                        byte[] letData2 = Encoding.UTF8.GetBytes(letJson2);
+                        await udpClient.SendAsync(letData2, letData2.Length, serverEndpoint);
+
+                        continue; // NE zavrsava zadatak
+                    }
+
+                    // ako nema alarma — nastavlja normalno izvrsenje
                     await Task.Delay(2000);
 
                     zadatak.Status = StatusZadatka.Zavrsen;
+
+
+
                     zadatak.LetelicaId = l.Id;
 
                     l.X = zadatak.X;
