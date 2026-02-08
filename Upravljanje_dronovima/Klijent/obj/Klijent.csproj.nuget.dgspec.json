@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Lenovo\\Documents\\GitHub\\PRMS_projekat\\Upravljanje_dronovima\\Klijent\\Klijent.csproj": {}
+    "C:\\Users\\Lenovo\\Documents\\GitHub\\PRMS\\PRMS_projekat\\Upravljanje_dronovima\\Klijent\\Klijent.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Lenovo\\Documents\\GitHub\\PRMS_projekat\\Upravljanje_dronovima\\Klijent\\Klijent.csproj": {
+    "C:\\Users\\Lenovo\\Documents\\GitHub\\PRMS\\PRMS_projekat\\Upravljanje_dronovima\\Klijent\\Klijent.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Lenovo\\Documents\\GitHub\\PRMS_projekat\\Upravljanje_dronovima\\Klijent\\Klijent.csproj",
+        "projectUniqueName": "C:\\Users\\Lenovo\\Documents\\GitHub\\PRMS\\PRMS_projekat\\Upravljanje_dronovima\\Klijent\\Klijent.csproj",
         "projectName": "Klijent",
-        "projectPath": "C:\\Users\\Lenovo\\Documents\\GitHub\\PRMS_projekat\\Upravljanje_dronovima\\Klijent\\Klijent.csproj",
+        "projectPath": "C:\\Users\\Lenovo\\Documents\\GitHub\\PRMS\\PRMS_projekat\\Upravljanje_dronovima\\Klijent\\Klijent.csproj",
         "packagesPath": "C:\\Users\\Lenovo\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Lenovo\\Documents\\GitHub\\PRMS_projekat\\Upravljanje_dronovima\\Klijent\\obj\\",
+        "outputPath": "C:\\Users\\Lenovo\\Documents\\GitHub\\PRMS\\PRMS_projekat\\Upravljanje_dronovima\\Klijent\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
