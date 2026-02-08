@@ -3,7 +3,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Upravljanje_Dronovima.Models;
+using Klijent.Modeli;
 
 namespace Klijent
 {
