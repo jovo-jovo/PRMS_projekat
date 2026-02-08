@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Networking\" />
+    <ProjectReference Include="..\Modeli\Modeli.csproj" />
   </ItemGroup>
 
 </Project>

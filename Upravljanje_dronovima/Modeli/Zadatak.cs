@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Server.Modeli
+namespace Modeli
 {
         public enum TipZadatka { Setva, Navodnjavanje, Zetva }
         public enum StatusZadatka { UToku, Zavrsen }

@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace Klijent.Modeli
+namespace Modeli
 {
     public enum TipLetelice { Nadzorna, Izvrsna }
     public enum StatusLetelice { Slobodna, Zauzeta, UKvaru }
-
     public class Letelica
     {
         public Guid Id { get; set; }

@@ -1,20 +1,19 @@
-﻿using Klijent.Modeli;
-using Server.Modeli;
+﻿using Modeli;
 using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+
 namespace Klijent
 {
     class Klijent
     {
         static async Task Main()
         {
-            UdpClient udpClient = new UdpClient();
+            UdpClient udpClient = new UdpClient(0);
             var serverEndpoint = new IPEndPoint(IPAddress.Loopback, 9000);
-
 
             Letelica l = new Letelica
             {
@@ -25,13 +24,12 @@ namespace Klijent
                 Status = StatusLetelice.Slobodna
             };
 
+            // Registracija letelice
             string json = JsonSerializer.Serialize(l);
             byte[] data = Encoding.UTF8.GetBytes(json);
-
-            // Šaljemo serveru
             await udpClient.SendAsync(data, data.Length, serverEndpoint);
 
-            // Čekamo potvrdu
+            // Čekamo potvrdu (ACK)
             var response = await udpClient.ReceiveAsync();
             Console.WriteLine("Server: " + Encoding.UTF8.GetString(response.Buffer));
 
@@ -41,32 +39,47 @@ namespace Klijent
             {
                 try
                 {
-                    var zadatakMsg = await udpClient.ReceiveAsync();
-                    string zadatakJson = Encoding.UTF8.GetString(zadatakMsg.Buffer);
+                    var msg = await udpClient.ReceiveAsync();
+                    string text = Encoding.UTF8.GetString(msg.Buffer);
 
-                    Zadatak? zadatak = JsonSerializer.Deserialize<Zadatak>(zadatakJson);
+                    // Ignoriši ACK poruke
+                    if (text == "ACK")
+                        continue;
 
-                    if (zadatak != null)
-                    {
-                        Console.WriteLine($"Primljen zadatak: {zadatak.Tip} na polju ({zadatak.X},{zadatak.Y})");
+                    Zadatak? zadatak = null;
+                    try { zadatak = JsonSerializer.Deserialize<Zadatak>(text); } catch { }
 
-                        l.Status = StatusLetelice.Zauzeta;
-                        await Task.Delay(2000); 
-                        zadatak.Status = StatusZadatka.Zavrsen;
-                        l.X = zadatak.X;
-                        l.Y = zadatak.Y;
-                        l.Status = StatusLetelice.Slobodna;
+                    if (zadatak == null)
+                        continue;
 
-                        string jsonZadatak = JsonSerializer.Serialize(zadatak);
-                        byte[] bytes = Encoding.UTF8.GetBytes(jsonZadatak);
-                        await udpClient.SendAsync(bytes, bytes.Length, serverEndpoint);
+                    Console.WriteLine($"Primljen zadatak: {zadatak.Tip} na polju ({zadatak.X},{zadatak.Y})");
 
-                        Console.WriteLine($"Zadatak ({zadatak.Tip}) završen i poslat serveru");
-                    }
+                    // Simulacija izvršenja
+                    l.Status = StatusLetelice.Zauzeta;
+                    await Task.Delay(2000);
+
+                    zadatak.Status = StatusZadatka.Zavrsen;
+                    zadatak.LetelicaId = l.Id;
+
+                    l.X = zadatak.X;
+                    l.Y = zadatak.Y;
+                    l.Status = StatusLetelice.Slobodna;
+
+                    // Pošalji završeni zadatak serveru
+                    string jsonZadatak = JsonSerializer.Serialize(zadatak);
+                    byte[] bytes = Encoding.UTF8.GetBytes(jsonZadatak);
+                    await udpClient.SendAsync(bytes, bytes.Length, serverEndpoint);
+
+                    // Pošalji update letelice (status + pozicija)
+                    string letJson = JsonSerializer.Serialize(l);
+                    byte[] letData = Encoding.UTF8.GetBytes(letJson);
+                    await udpClient.SendAsync(letData, letData.Length, serverEndpoint);
+
+                    Console.WriteLine($"Zadatak ({zadatak.Tip}) završen i poslat serveru");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Greška u prijemu zadatka: " + ex.Message);
+                    Console.WriteLine("Greška: " + ex.Message);
                 }
             }
         }

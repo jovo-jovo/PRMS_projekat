@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Server.Modeli
+namespace Modeli
 {
     public enum TipPolja { Neobradjeno, Obradjeno, Alarm }
     public enum StatusPolja { Slobodno, Zauzeto }
