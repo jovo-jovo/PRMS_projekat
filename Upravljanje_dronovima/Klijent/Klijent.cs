@@ -29,8 +29,7 @@ namespace Klijent
             byte[] data = Encoding.UTF8.GetBytes(json);
 
             // Šaljemo serveru
-            await udpClient.SendAsync(data, data.Length, "127.0.0.1", 9000);
-           /* await udpClient.SendAsync(data, data.Length, serverEndpoint);*/
+            await udpClient.SendAsync(data, data.Length, serverEndpoint);
 
             // Čekamo potvrdu
             var response = await udpClient.ReceiveAsync();
