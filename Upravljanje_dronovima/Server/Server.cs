@@ -20,6 +20,18 @@ namespace Server
             var letelicaEndpoints = new Dictionary<Guid, IPEndPoint>();
             var alarmi = new List<Alarm>();
 
+            // statistika po zadatku
+            var taskStart = new Dictionary<Guid, DateTime>();     
+            var taskRedistribuisan = new HashSet<Guid>(); 
+
+            // statistika po letelici
+            var DronOdradio = new Dictionary<Guid, List<(Zadatak task, TimeSpan dur)>>();
+
+            // statistika servera
+            int alarmBrojac = 0;
+            int redistBrojac = 0;
+            int redistUspesnost = 0;
+
             Console.WriteLine("Server pokrenut na portu 9000");
 
             int sirina = 5;
@@ -99,6 +111,25 @@ namespace Server
                             {
                                 zad.Status = StatusZadatka.Zavrsen;
 
+                                TimeSpan trajanje = TimeSpan.Zero;
+                                if (taskStart.TryGetValue(zad.Id, out var start))
+                                {
+                                    trajanje = DateTime.Now - start;
+                                    taskStart.Remove(zad.Id);
+                                }
+
+                                if (!DronOdradio.ContainsKey(zavrseniZadatak.LetelicaId))
+                                    DronOdradio[zavrseniZadatak.LetelicaId] = new List<(Zadatak, TimeSpan)>();
+
+                                DronOdradio[zavrseniZadatak.LetelicaId].Add((zad, trajanje));
+
+                                // ako je bio redistribuisan i gotov je, onda uspesna redistribucija
+                                if (taskRedistribuisan.Contains(zad.Id))
+                                {
+                                    redistUspesnost++;
+                                    taskRedistribuisan.Remove(zad.Id);
+                                }
+
                                 // oslobodi letelicu
                                 var let = letelice.Find(l => l.Id == zad.LetelicaId);
                                 if (let != null)
@@ -173,6 +204,7 @@ namespace Server
 
                         Zadatak zadatak = new Zadatak
                         {
+                            Id = Guid.NewGuid(),
                             Tip = TipZadatka.Navodnjavanje,
                             X = polje.X,
                             Y = polje.Y,
@@ -181,6 +213,7 @@ namespace Server
                         };
 
                         zadaci.Add(zadatak);
+                        taskStart[zadatak.Id] = DateTime.Now;       //startno vrijeme zadatka
                         slobodnaLetelica.Status = StatusLetelice.Zauzeta;
 
                         // biljezi polje zauzetim dok se radi
@@ -193,6 +226,16 @@ namespace Server
 
                         Console.WriteLine($"Poslat zadatak {zadatak.Tip} letelici {slobodnaLetelica.Id} za ({polje.X},{polje.Y})");
                         break;
+                    }
+                }
+
+                if (Console.KeyAvailable)
+                {
+                    var kljuc = Console.ReadKey(true).Key;
+
+                    if (kljuc == ConsoleKey.R)
+                    {
+                        PrintReport(DronOdradio, alarmBrojac, redistBrojac, redistUspesnost);
                     }
                 }
 

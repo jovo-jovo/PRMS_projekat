@@ -90,7 +90,6 @@ namespace Klijent
                     await Task.Delay(2000);
 
                     zadatak.Status = StatusZadatka.Zavrsen;
-
                     zadatak.LetelicaId = l.Id;
 
                     l.X = zadatak.X;

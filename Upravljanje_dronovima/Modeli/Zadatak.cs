@@ -9,6 +9,7 @@ namespace Modeli
 
         public class Zadatak
         {
+            public Guid Id { get; set; }
             public TipZadatka Tip { get; set; }
             public int X { get; set; }
             public int Y { get; set; }
