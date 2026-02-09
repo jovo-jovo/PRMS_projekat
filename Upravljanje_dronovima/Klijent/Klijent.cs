@@ -24,12 +24,12 @@ namespace Klijent
                 Status = StatusLetelice.Slobodna
             };
 
-            // Registracija letelice
+            // registracija letelice
             string json = JsonSerializer.Serialize(l);
             byte[] data = Encoding.UTF8.GetBytes(json);
             await udpClient.SendAsync(data, data.Length, serverEndpoint);
 
-            // Ceka potvrdu (ACK)
+            // ceka potvrdu (ACK)
             var response = await udpClient.ReceiveAsync();
             Console.WriteLine("Server: " + Encoding.UTF8.GetString(response.Buffer));
 
@@ -42,7 +42,7 @@ namespace Klijent
                     var msg = await udpClient.ReceiveAsync();
                     string text = Encoding.UTF8.GetString(msg.Buffer);
 
-                    // Ignorisi ACK poruke
+                    // ignorisi ACK poruke
                     if (text == "ACK")
                         continue;
 
@@ -54,7 +54,7 @@ namespace Klijent
 
                     Console.WriteLine($"Primljen zadatak: {zadatak.Tip} na polju ({zadatak.X},{zadatak.Y})");
 
-                    // Simulacija izvrsenja
+                    // simulacija izvrsenja
                     l.Status = StatusLetelice.Zauzeta;
 
                     // simulacija kvara (5%)

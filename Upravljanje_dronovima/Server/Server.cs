@@ -243,42 +243,36 @@ namespace Server
             }
         }
 
-        static void PrintReport(
-        Dictionary<Guid, List<(Zadatak task, TimeSpan dur)>> doneByDrone,
-        int alarmCount,
-        int redistributedCount,
-        int redistributionSuccess)
+        static void PrintReport(Dictionary<Guid, List<(Zadatak task, TimeSpan dur)>> dronOdradio, int alarmBrojac, int redistBrojac, int redistUspesnost)
         {
             Console.WriteLine("\n========= IZVJEŠTAJ SISTEMA =========\n");
 
             Console.WriteLine("LETELICE:");
             Console.WriteLine("ID\t\t\t\tZadaci\tProsječno vrijeme (ms)");
 
-            foreach (var kv in doneByDrone)
+            foreach (var kv in dronOdradio)
             {
-                var droneId = kv.Key;
-                var tasks = kv.Value;
+                var dronId = kv.Key;
+                var taskovi = kv.Value;
 
-                double avg = tasks.Count == 0
-                    ? 0
-                    : tasks.Average(t => t.dur.TotalMilliseconds);
+                double avg = taskovi.Count == 0 ? 0 : taskovi.Average(t => t.dur.TotalMilliseconds);
 
-                Console.WriteLine($"{droneId}\t{tasks.Count}\t{avg:F1}");
+                Console.WriteLine($"{dronId}\t{taskovi.Count}\t{avg:F1}");
             }
 
             Console.WriteLine("\nSERVER:");
-            Console.WriteLine($"Ukupno alarma: {alarmCount}");
-            Console.WriteLine($"Redistribuirani zadaci: {redistributedCount}");
-            Console.WriteLine($"Uspješne redistribucije: {redistributionSuccess}");
+            Console.WriteLine($"Ukupno alarma: {alarmBrojac}");
+            Console.WriteLine($"Redistribuirani zadaci: {redistBrojac}");
+            Console.WriteLine($"Uspjesne redistribucije: {redistUspesnost}");
 
-            if (redistributedCount > 0)
+            if (redistBrojac > 0)
             {
-                double successRate = (double)redistributionSuccess / redistributedCount * 100;
-                Console.WriteLine($"Uspješnost redistribucije: {successRate:F1}%");
+                double successRate = (double)redistUspesnost / redistBrojac * 100;
+                Console.WriteLine($"Uspjesnost redistribucije: {successRate:F1}%");
             }
             else
             {
-                Console.WriteLine("Uspješnost redistribucije: N/A");
+                Console.WriteLine("Uspjesnost redistribucije: N/A");
             }
 
             Console.WriteLine("\n====================================\n");
