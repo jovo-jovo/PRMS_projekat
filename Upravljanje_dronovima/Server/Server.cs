@@ -242,5 +242,46 @@ namespace Server
                 await Task.Delay(1000);
             }
         }
+
+        static void PrintReport(
+        Dictionary<Guid, List<(Zadatak task, TimeSpan dur)>> doneByDrone,
+        int alarmCount,
+        int redistributedCount,
+        int redistributionSuccess)
+        {
+            Console.WriteLine("\n========= IZVJEŠTAJ SISTEMA =========\n");
+
+            Console.WriteLine("LETELICE:");
+            Console.WriteLine("ID\t\t\t\tZadaci\tProsječno vrijeme (ms)");
+
+            foreach (var kv in doneByDrone)
+            {
+                var droneId = kv.Key;
+                var tasks = kv.Value;
+
+                double avg = tasks.Count == 0
+                    ? 0
+                    : tasks.Average(t => t.dur.TotalMilliseconds);
+
+                Console.WriteLine($"{droneId}\t{tasks.Count}\t{avg:F1}");
+            }
+
+            Console.WriteLine("\nSERVER:");
+            Console.WriteLine($"Ukupno alarma: {alarmCount}");
+            Console.WriteLine($"Redistribuirani zadaci: {redistributedCount}");
+            Console.WriteLine($"Uspješne redistribucije: {redistributionSuccess}");
+
+            if (redistributedCount > 0)
+            {
+                double successRate = (double)redistributionSuccess / redistributedCount * 100;
+                Console.WriteLine($"Uspješnost redistribucije: {successRate:F1}%");
+            }
+            else
+            {
+                Console.WriteLine("Uspješnost redistribucije: N/A");
+            }
+
+            Console.WriteLine("\n====================================\n");
+        }
     }
 }
